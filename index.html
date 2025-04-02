@@ -2,14 +2,14 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Endowment-Effekt Experiment</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 100%;
-            margin: 0 auto;
+            margin: 0;
             padding: 20px;
+            max-width: 100%;
         }
         .section {
             display: none;
@@ -44,90 +44,153 @@
         #results {
             margin-top: 30px;
         }
+        
+        /* Completely revised chart container */
         .chart-container {
-            height: 400px;
             position: relative;
-            margin-top: 50px;
-            margin-bottom: 50px;
-            width: 100%;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
+            height: 500px;
+            margin: 80px auto 60px auto;
+            max-width: 1000px;
+        }
+        
+        /* Axes */
+        .axis {
+            position: absolute;
+            background-color: black;
+        }
+        .x-axis {
+            bottom: 0;
+            left: 80px;
+            height: 2px;
+            width: calc(100% - 100px);
+        }
+        .y-axis {
+            bottom: 0;
+            left: 80px;
+            width: 2px;
+            height: 400px;
+        }
+        
+        /* Axis labels */
+        .axis-label {
+            position: absolute;
+            font-weight: bold;
+            text-align: center;
+        }
+        .x-label {
+            bottom: -40px;
+            left: 80px;
+            width: calc(100% - 100px);
+        }
+        .y-label {
+            transform: rotate(-90deg);
+            transform-origin: left top;
+            left: 20px;
+            top: 200px;
+            width: 400px;
+        }
+        
+        /* Axis arrows */
+        .arrow {
+            position: absolute;
+            width: 0;
+            height: 0;
+        }
+        .x-arrow {
+            right: 10px;
+            bottom: -4px;
+            border-left: 10px solid black;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+        }
+        .y-arrow {
+            left: 74px;
+            top: 0;
+            border-bottom: 10px solid black;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+        }
+        
+        /* Bar layout */
+        .bar-container {
+            position: absolute;
+            bottom: 0;
+            width: 120px;
+            text-align: center;
+        }
+        .with-container {
+            left: calc(30% + 80px);
+        }
+        .without-container {
+            right: 20%;
         }
         .bar {
-            position: absolute;
-            bottom: 30px; /* Space for x-axis */
-            width: 120px;
             background-color: #4CAF50;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
+            width: 100%;
+            margin: 0 auto;
             transition: height 1s ease-in-out;
-        }
-        .bar:first-child {
-            left: 25%;
-        }
-        .bar:last-child {
-            right: 25%;
+            position: relative;
         }
         .bar-value {
-            margin-top: -25px;
+            position: absolute;
+            top: -30px;
+            width: 100%;
+            text-align: center;
             font-weight: bold;
         }
         .bar-label {
-            margin-top: 10px;
+            position: absolute;
+            bottom: -30px;
+            width: 100%;
             text-align: center;
             font-weight: bold;
         }
-        .xaxis {
-            position: absolute;
-            bottom: 0;
-            left: 40px;
-            width: calc(100% - 60px);
-            height: 2px;
-            background-color: #000;
+        
+        /* Individual data points visualization */
+        .data-points-container {
+            margin-top: 60px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
         }
-        .xaxis:after {
-            content: "";
-            position: absolute;
-            right: -10px;
-            top: -5px;
-            width: 0;
-            height: 0;
-            border-left: 10px solid black;
-            border-top: 5px solid transparent;
-            border-bottom: 5px solid transparent;
+        .data-points-header {
+            margin-bottom: 20px;
+            font-weight: bold;
         }
-        .yaxis {
-            position: absolute;
-            left: 40px;
-            bottom: 0;
-            width: 2px;
-            height: calc(100% - 0px);
-            background-color: #000;
+        .data-points {
+            position: relative;
+            height: 200px;
+            margin: 30px 0;
+            border-bottom: 2px solid #ccc;
+            border-left: 2px solid #ccc;
         }
-        .yaxis:after {
-            content: "";
+        .data-points-title {
             position: absolute;
             left: -5px;
-            top: -10px;
-            width: 0;
-            height: 0;
-            border-bottom: 10px solid black;
-            border-left: 5px solid transparent;
-            border-right: 5px solid transparent;
-        }
-        .y-label {
-            position: absolute;
-            left: -20px;
-            top: 40%;
-            transform: rotate(-90deg);
-            transform-origin: center right;
+            top: -30px;
             font-weight: bold;
-            width: 200px;
-            text-align: center;
         }
+        .data-point {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+            transform: translate(-50%, 50%);
+        }
+        .data-axis-label {
+            position: absolute;
+            font-size: 12px;
+            color: #555;
+        }
+        .data-value {
+            position: absolute;
+            top: -20px;
+            font-size: 10px;
+            transform: translateX(-50%);
+        }
+        
         input[type="password"] {
             padding: 8px;
             margin-right: 10px;
@@ -152,44 +215,29 @@
             margin-top: 20px;
         }
         
-        /* Verbesserte Responsiveness */
+        /* Mobile responsiveness */
         @media (max-width: 768px) {
             .chart-container {
+                height: 400px;
+                margin-top: 60px;
+            }
+            .y-axis {
                 height: 300px;
             }
-            .bar {
+            .bar-container {
                 width: 80px;
-            }
-            .bar:first-child {
-                left: 20%;
-            }
-            .bar:last-child {
-                right: 20%;
             }
         }
         
         @media (max-width: 480px) {
             .chart-container {
+                height: 350px;
+            }
+            .y-axis {
                 height: 250px;
             }
-            .bar {
+            .bar-container {
                 width: 60px;
-            }
-            .bar:first-child {
-                left: 15%;
-            }
-            .bar:last-child {
-                right: 15%;
-            }
-        }
-        
-        /* Für Präsentationsmodus */
-        @media (min-width: 1200px) {
-            .chart-container {
-                height: 600px;
-            }
-            .bar {
-                width: 150px;
             }
         }
     </style>
@@ -242,19 +290,54 @@
             
             <h2>Durchschnittliche Werte pro Gruppe</h2>
             
+            <!-- Komplett überarbeitetes Chart Layout -->
             <div class="chart-container">
-                <div class="yaxis"></div>
-                <div class="y-label">Durchschnittswert [€]</div>
-                <div class="xaxis"></div>
+                <!-- Axes -->
+                <div class="axis y-axis"></div>
+                <div class="axis x-axis"></div>
                 
-                <div class="bar" id="with-bar">
-                    <div class="bar-value" id="with-value">0.00€</div>
+                <!-- Arrows -->
+                <div class="arrow x-arrow"></div>
+                <div class="arrow y-arrow"></div>
+                
+                <!-- Labels -->
+                <div class="axis-label y-label">Durchschnittswert [€]</div>
+                
+                <!-- Bars -->
+                <div class="bar-container with-container">
+                    <div class="bar" id="with-bar">
+                        <div class="bar-value" id="with-value">0.00€</div>
+                    </div>
                     <div class="bar-label">Besitz</div>
                 </div>
                 
-                <div class="bar" id="without-bar">
-                    <div class="bar-value" id="without-value">0.00€</div>
+                <div class="bar-container without-container">
+                    <div class="bar" id="without-bar">
+                        <div class="bar-value" id="without-value">0.00€</div>
+                    </div>
                     <div class="bar-label">Kein Besitz</div>
+                </div>
+            </div>
+            
+            <!-- Individuelle Datenpunkte Visualisierung -->
+            <div class="data-points-container">
+                <div class="data-points-header">Verteilung der individuellen Werte</div>
+                
+                <div class="data-points" id="with-data-points">
+                    <div class="data-points-title">Besitz-Gruppe</div>
+                </div>
+                
+                <div class="data-points" id="without-data-points">
+                    <div class="data-points-title">Kein-Besitz-Gruppe</div>
+                </div>
+                
+                <!-- Axis Labels für die Datenpunkte -->
+                <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                    <div>0.00€</div>
+                    <div>0.50€</div>
+                    <div>1.00€</div>
+                    <div>1.50€</div>
+                    <div>2.00€</div>
                 </div>
             </div>
             
@@ -288,8 +371,14 @@
         };
         
         // Firebase initialisieren
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        try {
+            firebase.initializeApp(firebaseConfig);
+            const db = firebase.firestore();
+            console.log("Firebase erfolgreich initialisiert");
+        } catch (error) {
+            console.error("Fehler bei der Firebase-Initialisierung:", error);
+            alert("Es gab ein Problem bei der Verbindung zum Server. Bitte laden Sie die Seite neu.");
+        }
         
         // Konstanten
         const ADMIN_PASSWORD = "experiment123"; // ← HIER PASSWORT ÄNDERN
@@ -307,16 +396,23 @@
             without: []
         };
         let sessionId = null;
+        const db = firebase.firestore();
         
         // Beim Laden der Seite
         window.onload = function() {
-            // Generiere eindeutige Session-ID für den Teilnehmer
-            sessionId = generateSessionId();
-            
-            // Prüfe Admin-Modus über URL-Parameter
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('admin')) {
-                showSection('admin-section');
+            try {
+                // Generiere eindeutige Session-ID für den Teilnehmer
+                sessionId = generateSessionId();
+                
+                // Prüfe Admin-Modus über URL-Parameter
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.has('admin')) {
+                    showSection('admin-section');
+                }
+                
+                console.log("Seite erfolgreich geladen");
+            } catch (error) {
+                console.error("Fehler beim Laden der Seite:", error);
             }
         };
         
@@ -336,50 +432,60 @@
         
         // Option auswählen (Gummibärchen oder Geld)
         function selectOption(option) {
-            if (option === 'money' && switchValue === null) {
-                // Erster Wechsel zu "Geld" - speichere den Wert
-                switchValue = AMOUNTS[currentAmountIndex];
-                document.getElementById('selected-value').textContent = switchValue.toFixed(2) + '€';
-                document.getElementById('value-indicator').classList.remove('hidden');
-                document.getElementById('submit-btn').classList.remove('hidden');
-            }
-            
-            // Zum nächsten Betrag wechseln
-            currentAmountIndex++;
-            
-            // Prüfen, ob alle Beträge durchlaufen wurden
-            if (currentAmountIndex >= AMOUNTS.length) {
-                if (switchValue === null) {
-                    // Wenn immer "Gummibärchen" gewählt wurde, setze auf max. Wert
-                    switchValue = AMOUNTS[AMOUNTS.length - 1];
+            try {
+                if (option === 'money' && switchValue === null) {
+                    // Erster Wechsel zu "Geld" - speichere den Wert
+                    switchValue = AMOUNTS[currentAmountIndex];
                     document.getElementById('selected-value').textContent = switchValue.toFixed(2) + '€';
                     document.getElementById('value-indicator').classList.remove('hidden');
+                    document.getElementById('submit-btn').classList.remove('hidden');
                 }
-                document.getElementById('submit-btn').classList.remove('hidden');
-                return;
+                
+                // Zum nächsten Betrag wechseln
+                currentAmountIndex++;
+                
+                // Prüfen, ob alle Beträge durchlaufen wurden
+                if (currentAmountIndex >= AMOUNTS.length) {
+                    if (switchValue === null) {
+                        // Wenn immer "Gummibärchen" gewählt wurde, setze auf max. Wert
+                        switchValue = AMOUNTS[AMOUNTS.length - 1];
+                        document.getElementById('selected-value').textContent = switchValue.toFixed(2) + '€';
+                        document.getElementById('value-indicator').classList.remove('hidden');
+                    }
+                    document.getElementById('submit-btn').classList.remove('hidden');
+                    return;
+                }
+                
+                // Aktualisiere angezeigten Betrag
+                document.getElementById('current-amount').textContent = AMOUNTS[currentAmountIndex].toFixed(2) + '€';
+            } catch (error) {
+                console.error("Fehler bei der Optionsauswahl:", error);
+                alert("Es ist ein Fehler aufgetreten. Bitte laden Sie die Seite neu.");
             }
-            
-            // Aktualisiere angezeigten Betrag
-            document.getElementById('current-amount').textContent = AMOUNTS[currentAmountIndex].toFixed(2) + '€';
         }
         
         // Antwort absenden
         function submitResponse() {
-            // Speichere die Antwort in Firebase
-            db.collection("responses").doc(sessionId).set({
-                group: currentGroup,
-                value: switchValue,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            })
-            .then(() => {
-                // Zeige Dankes-Nachricht
-                document.getElementById('value-selection').classList.add('hidden');
-                document.getElementById('thank-you').classList.remove('hidden');
-            })
-            .catch((error) => {
-                console.error("Fehler beim Speichern der Antwort: ", error);
-                alert("Beim Speichern Ihrer Antwort ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.");
-            });
+            try {
+                // Speichere die Antwort in Firebase
+                db.collection("responses").doc(sessionId).set({
+                    group: currentGroup,
+                    value: switchValue,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                })
+                .then(() => {
+                    // Zeige Dankes-Nachricht
+                    document.getElementById('value-selection').classList.add('hidden');
+                    document.getElementById('thank-you').classList.remove('hidden');
+                })
+                .catch((error) => {
+                    console.error("Fehler beim Speichern der Antwort: ", error);
+                    alert("Beim Speichern Ihrer Antwort ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.");
+                });
+            } catch (error) {
+                console.error("Fehler beim Absenden der Antwort:", error);
+                alert("Es gab ein Problem beim Speichern. Bitte versuchen Sie es erneut.");
+            }
         }
         
         // Admin-Passwort prüfen
@@ -396,58 +502,115 @@
         
         // Echtzeit-Updates starten
         function startRealtimeUpdates() {
-            document.getElementById('loading').style.display = 'block';
-            
-            // Echtzeit-Listener für Antworten
-            db.collection("responses").onSnapshot((snapshot) => {
-                // Setze Daten zurück
-                allResponses = {
-                    with: [],
-                    without: []
-                };
+            try {
+                document.getElementById('loading').style.display = 'block';
                 
-                // Verarbeite alle Dokumente
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    if (data.group && data.value) {
-                        allResponses[data.group].push(data.value);
-                    }
+                // Echtzeit-Listener für Antworten
+                db.collection("responses").onSnapshot((snapshot) => {
+                    // Setze Daten zurück
+                    allResponses = {
+                        with: [],
+                        without: []
+                    };
+                    
+                    // Verarbeite alle Dokumente
+                    snapshot.forEach((doc) => {
+                        const data = doc.data();
+                        if (data.group && data.value) {
+                            allResponses[data.group].push(data.value);
+                        }
+                    });
+                    
+                    // Aktualisiere die Anzeige
+                    updateResults();
+                    document.getElementById('loading').style.display = 'none';
+                }, (error) => {
+                    console.error("Fehler beim Abrufen der Daten: ", error);
+                    document.getElementById('loading').textContent = 'Fehler beim Laden der Daten.';
                 });
-                
-                // Aktualisiere die Anzeige
-                updateResults();
-                document.getElementById('loading').style.display = 'none';
-            }, (error) => {
-                console.error("Fehler beim Abrufen der Daten: ", error);
-                document.getElementById('loading').textContent = 'Fehler beim Laden der Daten.';
-            });
+            } catch (error) {
+                console.error("Fehler beim Starten der Echtzeit-Updates:", error);
+                document.getElementById('loading').textContent = 'Fehler beim Verbinden mit dem Server.';
+            }
         }
         
         // Ergebnisse aktualisieren
         function updateResults() {
-            // Berechne Durchschnittswerte
-            const withAvg = calculateAverage(allResponses.with);
-            const withoutAvg = calculateAverage(allResponses.without);
-            
-            // Aktualisiere Anzeige
-            document.getElementById('with-count').textContent = allResponses.with.length;
-            document.getElementById('without-count').textContent = allResponses.without.length;
-            document.getElementById('with-avg').textContent = withAvg.toFixed(2) + '€';
-            document.getElementById('without-avg').textContent = withoutAvg.toFixed(2) + '€';
-            document.getElementById('total-participants').textContent = 
-                allResponses.with.length + allResponses.without.length;
-            
-            // Aktualisiere Balkendiagramm
-            document.getElementById('with-value').textContent = withAvg.toFixed(2) + '€';
-            document.getElementById('without-value').textContent = withoutAvg.toFixed(2) + '€';
-            
-            // Setze Balkenhöhe (max 70% der Container-Höhe, bei max. 2€)
-            const maxHeight = document.querySelector('.chart-container').offsetHeight * 0.7;
-            const withHeight = (withAvg / 2) * maxHeight;
-            const withoutHeight = (withoutAvg / 2) * maxHeight;
-            
-            document.getElementById('with-bar').style.height = withHeight + 'px';
-            document.getElementById('without-bar').style.height = withoutHeight + 'px';
+            try {
+                // Berechne Durchschnittswerte
+                const withAvg = calculateAverage(allResponses.with);
+                const withoutAvg = calculateAverage(allResponses.without);
+                
+                // Aktualisiere Anzeige
+                document.getElementById('with-count').textContent = allResponses.with.length;
+                document.getElementById('without-count').textContent = allResponses.without.length;
+                document.getElementById('with-avg').textContent = withAvg.toFixed(2) + '€';
+                document.getElementById('without-avg').textContent = withoutAvg.toFixed(2) + '€';
+                document.getElementById('total-participants').textContent = 
+                    allResponses.with.length + allResponses.without.length;
+                
+                // Aktualisiere Balkendiagramm
+                document.getElementById('with-value').textContent = withAvg.toFixed(2) + '€';
+                document.getElementById('without-value').textContent = withoutAvg.toFixed(2) + '€';
+                
+                // Setze Balkenhöhe (bezogen auf maximalen Wert von 2€)
+                const maxHeightPercent = 90; // 90% der y-Achse nutzen
+                const withHeight = (withAvg / 2) * maxHeightPercent + '%';
+                const withoutHeight = (withoutAvg / 2) * maxHeightPercent + '%';
+                
+                document.getElementById('with-bar').style.height = withHeight;
+                document.getElementById('without-bar').style.height = withoutHeight;
+                
+                // Aktualisiere individuelle Datenpunkte
+                updateDataPoints('with', allResponses.with);
+                updateDataPoints('without', allResponses.without);
+                
+            } catch (error) {
+                console.error("Fehler beim Aktualisieren der Ergebnisse:", error);
+            }
+        }
+        
+        // Datenpunkte für die Verteilungsansicht aktualisieren
+        function updateDataPoints(group, dataArray) {
+            try {
+                // Container leeren
+                const container = document.getElementById(group + '-data-points');
+                
+                // Titel behalten und den Rest löschen
+                const title = container.querySelector('.data-points-title');
+                container.innerHTML = '';
+                container.appendChild(title);
+                
+                // Datenpunkte sortieren (absteigend)
+                const sortedData = [...dataArray].sort((a, b) => b - a);
+                
+                // Datenpunkte hinzufügen
+                sortedData.forEach((value, index) => {
+                    const dataPoint = document.createElement('div');
+                    dataPoint.className = 'data-point';
+                    
+                    // Position berechnen (x basiert auf Wert, y auf Index für vertikalen Abstand)
+                    const xPos = (value / 2) * 100; // Prozentualer Wert (0-100%)
+                    const yPos = (index * 20) + 10; // Vertikaler Abstand
+                    
+                    dataPoint.style.left = xPos + '%';
+                    dataPoint.style.top = yPos + 'px';
+                    
+                    // Wert als Tooltip
+                    dataPoint.title = value.toFixed(2) + '€';
+                    
+                    // Wert anzeigen
+                    const valueLabel = document.createElement('div');
+                    valueLabel.className = 'data-value';
+                    valueLabel.textContent = value.toFixed(2) + '€';
+                    dataPoint.appendChild(valueLabel);
+                    
+                    container.appendChild(dataPoint);
+                });
+                
+            } catch (error) {
+                console.error("Fehler beim Aktualisieren der Datenpunkte:", error);
+            }
         }
         
         // Durchschnitt berechnen
@@ -460,44 +623,54 @@
         // Daten zurücksetzen
         function resetData() {
             if (confirm('Sind Sie sicher, dass Sie alle Daten zurücksetzen möchten? Dies kann nicht rückgängig gemacht werden.')) {
-                // Lösche alle Dokumente in der Collection
-                db.collection("responses").get().then((snapshot) => {
-                    const batch = db.batch();
-                    snapshot.forEach((doc) => {
-                        batch.delete(doc.ref);
+                try {
+                    // Lösche alle Dokumente in der Collection
+                    db.collection("responses").get().then((snapshot) => {
+                        const batch = db.batch();
+                        snapshot.forEach((doc) => {
+                            batch.delete(doc.ref);
+                        });
+                        return batch.commit();
+                    }).then(() => {
+                        alert('Alle Daten wurden zurückgesetzt.');
+                    }).catch((error) => {
+                        console.error("Fehler beim Zurücksetzen der Daten: ", error);
+                        alert('Beim Zurücksetzen der Daten ist ein Fehler aufgetreten.');
                     });
-                    return batch.commit();
-                }).then(() => {
-                    alert('Alle Daten wurden zurückgesetzt.');
-                }).catch((error) => {
-                    console.error("Fehler beim Zurücksetzen der Daten: ", error);
-                    alert('Beim Zurücksetzen der Daten ist ein Fehler aufgetreten.');
-                });
+                } catch (error) {
+                    console.error("Fehler beim Zurücksetzen der Daten:", error);
+                    alert("Es gab ein Problem beim Zurücksetzen. Bitte versuchen Sie es erneut.");
+                }
             }
         }
         
         // Daten als CSV herunterladen
         function downloadData() {
-            let csv = 'Gruppe,Wert\n';
-            
-            // Füge Daten hinzu
-            allResponses.with.forEach(value => {
-                csv += 'Besitz,' + value.toFixed(2) + '\n';
-            });
-            allResponses.without.forEach(value => {
-                csv += 'Kein Besitz,' + value.toFixed(2) + '\n';
-            });
-            
-            // Erstelle Download
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.setAttribute('hidden', '');
-            a.setAttribute('href', url);
-            a.setAttribute('download', 'endowment-effekt-experiment.csv');
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            try {
+                let csv = 'Gruppe,Wert\n';
+                
+                // Füge Daten hinzu
+                allResponses.with.forEach(value => {
+                    csv += 'Besitz,' + value.toFixed(2) + '\n';
+                });
+                allResponses.without.forEach(value => {
+                    csv += 'Kein Besitz,' + value.toFixed(2) + '\n';
+                });
+                
+                // Erstelle Download
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.setAttribute('hidden', '');
+                a.setAttribute('href', url);
+                a.setAttribute('download', 'endowment-effekt-experiment.csv');
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            } catch (error) {
+                console.error("Fehler beim Herunterladen der Daten:", error);
+                alert("Es gab ein Problem beim Herunterladen. Bitte versuchen Sie es erneut.");
+            }
         }
         
         // Wertauswahl zurücksetzen
@@ -511,14 +684,18 @@
         
         // Section anzeigen
         function showSection(sectionId) {
-            // Alle Sections ausblenden
-            const sections = document.getElementsByClassName('section');
-            for (let i = 0; i < sections.length; i++) {
-                sections[i].classList.remove('active');
+            try {
+                // Alle Sections ausblenden
+                const sections = document.getElementsByClassName('section');
+                for (let i = 0; i < sections.length; i++) {
+                    sections[i].classList.remove('active');
+                }
+                
+                // Gewählte Section einblenden
+                document.getElementById(sectionId).classList.add('active');
+            } catch (error) {
+                console.error("Fehler beim Anzeigen der Section:", error);
             }
-            
-            // Gewählte Section einblenden
-            document.getElementById(sectionId).classList.add('active');
         }
 
         // Bei Änderung der Fenstergröße die Grafik aktualisieren
