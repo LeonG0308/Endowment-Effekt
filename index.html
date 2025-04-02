@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gummibärchen-Experiment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .section {
+            display: none;
+            margin-bottom: 20px;
+        }
+        .section.active {
+            display: block;
+        }
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .option-btn {
+            width: 45%;
+            margin: 5px;
+        }
+        .gummibearchen-btn {
+            background-color: #FF5722;
+        }
+        .money-btn {
+            background-color: #2196F3;
+        }
+        #results {
+            margin-top: 30px;
+        }
+        .chart-container {
+            height: 300px;
+            position: relative;
+            margin-top: 30px;
+        }
+        .bar {
+            position: absolute;
+            bottom: 0;
+            width: 100px;
+            background-color: #4CAF50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            transition: height 1s ease-in-out;
+        }
+        .bar:first-child {
+            left: 100px;
+        }
+        .bar:last-child {
+            right: 100px;
+        }
+        .bar-value {
+            margin-top: -25px;
+            font-weight: bold;
+        }
+        .bar-label {
+            margin-top: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .xaxis {
+            position: absolute;
+            bottom: -30px;
+            width: 100%;
+            height: 1px;
+            background-color: #000;
+        }
+        .yaxis {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 1px;
+            height: 100%;
+            background-color: #000;
+        }
+        input[type="password"] {
+            padding: 8px;
+            margin-right: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+        .value-indicator {
+            font-weight: bold;
+            color: #4CAF50;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Teilnehmer-Bereich -->
+    <div id="participant-section" class="section active">
+        <h1>Gummibärchen-Experiment</h1>
+        <p>Vielen Dank für Ihre Teilnahme an diesem Experiment!</p>
+        
+        <div id="group-selection">
+            <h2>Schritt 1: Zu welcher Gruppe gehören Sie?</h2>
+            <button id="group-with" onclick="selectGroup('with')">Ich habe Haribo Gummibärchen erhalten</button>
+            <button id="group-without" onclick="selectGroup('without')">Ich habe KEINE Gummibärchen erhalten</button>
+        </div>
+        
+        <div id="value-selection" class="hidden">
+            <h2>Schritt 2: Ab welchem Betrag würden Sie lieber Geld als Gummibärchen nehmen?</h2>
+            <p>Aktueller Betrag: <span id="current-amount">0.10€</span></p>
+            
+            <div>
+                <button class="option-btn gummibearchen-btn" onclick="selectOption('gummy')">Gummibärchen</button>
+                <button class="option-btn money-btn" onclick="selectOption('money')">Geld</button>
+            </div>
+            
+            <div class="value-indicator hidden" id="value-indicator">
+                Ihr Gummibärchen-Wert: <span id="selected-value">0.00€</span>
+            </div>
+            
+            <button id="submit-btn" class="hidden" onclick="submitResponse()">Bestätigen und absenden</button>
+        </div>
+        
+        <div id="thank-you" class="hidden">
+            <h2>Vielen Dank für Ihre Teilnahme!</h2>
+            <p>Ihre Antwort wurde gespeichert.</p>
+        </div>
+    </div>
+    
+    <!-- Admin-Bereich -->
+    <div id="admin-section" class="section">
+        <h1>Ergebnisse des Experiments</h1>
+        
+        <div id="auth">
+            <input type="password" id="admin-password" placeholder="Admin-Passwort">
+            <button onclick="checkAdminPassword()">Anmelden</button>
+        </div>
+        
+        <div id="results" class="hidden">
+            <h2>Durchschnittliche Werte pro Gruppe</h2>
+            
+            <div class="chart-container">
+                <div class="yaxis"></div>
+                <div class="xaxis"></div>
+                
+                <div class="bar" id="with-bar">
+                    <div class="bar-value" id="with-value">0.00€</div>
+                    <div class="bar-label">Mit Gummibärchen</div>
+                </div>
+                
+                <div class="bar" id="without-bar">
+                    <div class="bar-value" id="without-value">0.00€</div>
+                    <div class="bar-label">Ohne Gummibärchen</div>
+                </div>
+            </div>
+            
+            <div>
+                <h3>Detaillierte Daten</h3>
+                <p>Gruppe mit Gummibärchen: <span id="with-count">0</span> Teilnehmer, Durchschnitt: <span id="with-avg">0.00€</span></p>
+                <p>Gruppe ohne Gummibärchen: <span id="without-count">0</span> Teilnehmer, Durchschnitt: <span id="without-avg">0.00€</span></p>
+                <button onclick="resetData()">Daten zurücksetzen</button>
+                <button onclick="downloadData()">Daten herunterladen (CSV)</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Konstanten
+        const ADMIN_PASSWORD = "gummibear123"; // Passwort ändern!
+        const AMOUNTS = [
+            0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 
+            1.00, 1.10, 1.20, 1.30, 1.40, 1.50, 1.60, 1.70, 1.80, 1.90, 2.00
+        ];
+        
+        // Globale Variablen
+        let currentGroup = null;
+        let currentAmountIndex = 0;
+        let switchValue = null;
+        let responses = {
+            with: [],
+            without: []
+        };
+        
+        // Beim Laden der Seite
+        window.onload = function() {
+            // Lade gespeicherte Daten
+            const savedData = localStorage.getItem('gummyBearExperiment');
+            if (savedData) {
+                responses = JSON.parse(savedData);
+            }
+            
+            // Prüfe Admin-Modus über URL-Parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('admin')) {
+                showSection('admin-section');
+            }
+        };
+        
+        // Gruppe auswählen
+        function selectGroup(group) {
+            currentGroup = group;
+            document.getElementById('group-selection').classList.add('hidden');
+            document.getElementById('value-selection').classList.remove('hidden');
+            resetValueSelection();
+        }
+        
+        // Option auswählen (Gummibärchen oder Geld)
+        function selectOption(option) {
+            if (option === 'money' && switchValue === null) {
+                // Erster Wechsel zu "Geld" - speichere den Wert
+                switchValue = AMOUNTS[currentAmountIndex];
+                document.getElementById('selected-value').textContent = switchValue.toFixed(2) + '€';
+                document.getElementById('value-indicator').classList.remove('hidden');
+                document.getElementById('submit-btn').classList.remove('hidden');
+            }
+            
+            // Zum nächsten Betrag wechseln
+            currentAmountIndex++;
+            
+            // Prüfen, ob alle Beträge durchlaufen wurden
+            if (currentAmountIndex >= AMOUNTS.length) {
+                if (switchValue === null) {
+                    // Wenn immer "Gummibärchen" gewählt wurde, setze auf max. Wert
+                    switchValue = AMOUNTS[AMOUNTS.length - 1];
+                    document.getElementById('selected-value').textContent = switchValue.toFixed(2) + '€';
+                    document.getElementById('value-indicator').classList.remove('hidden');
+                }
+                document.getElementById('submit-btn').classList.remove('hidden');
+                return;
+            }
+            
+            // Aktualisiere angezeigten Betrag
+            document.getElementById('current-amount').textContent = AMOUNTS[currentAmountIndex].toFixed(2) + '€';
+        }
+        
+        // Antwort absenden
+        function submitResponse() {
+            // Speichere die Antwort
+            responses[currentGroup].push(switchValue);
+            
+            // Speichere im localStorage
+            localStorage.setItem('gummyBearExperiment', JSON.stringify(responses));
+            
+            // Zeige Dankes-Nachricht
+            document.getElementById('value-selection').classList.add('hidden');
+            document.getElementById('thank-you').classList.remove('hidden');
+        }
+        
+        // Admin-Passwort prüfen
+        function checkAdminPassword() {
+            const password = document.getElementById('admin-password').value;
+            if (password === ADMIN_PASSWORD) {
+                document.getElementById('auth').classList.add('hidden');
+                document.getElementById('results').classList.remove('hidden');
+                updateResults();
+            } else {
+                alert('Falsches Passwort!');
+            }
+        }
+        
+        // Ergebnisse aktualisieren
+        function updateResults() {
+            // Berechne Durchschnittswerte
+            const withAvg = calculateAverage(responses.with);
+            const withoutAvg = calculateAverage(responses.without);
+            
+            // Aktualisiere Anzeige
+            document.getElementById('with-count').textContent = responses.with.length;
+            document.getElementById('without-count').textContent = responses.without.length;
+            document.getElementById('with-avg').textContent = withAvg.toFixed(2) + '€';
+            document.getElementById('without-avg').textContent = withoutAvg.toFixed(2) + '€';
+            
+            // Aktualisiere Balkendiagramm
+            document.getElementById('with-value').textContent = withAvg.toFixed(2) + '€';
+            document.getElementById('without-value').textContent = withoutAvg.toFixed(2) + '€';
+            
+            // Setze Balkenhöhe (max 250px, bei max. 2€)
+            const withHeight = (withAvg / 2) * 250;
+            const withoutHeight = (withoutAvg / 2) * 250;
+            document.getElementById('with-bar').style.height = withHeight + 'px';
+            document.getElementById('without-bar').style.height = withoutHeight + 'px';
+        }
+        
+        // Durchschnitt berechnen
+        function calculateAverage(values) {
+            if (values.length === 0) return 0;
+            const sum = values.reduce((a, b) => a + b, 0);
+            return sum / values.length;
+        }
+        
+        // Daten zurücksetzen
+        function resetData() {
+            if (confirm('Sind Sie sicher, dass Sie alle Daten zurücksetzen möchten?')) {
+                responses = { with: [], without: [] };
+                localStorage.setItem('gummyBearExperiment', JSON.stringify(responses));
+                updateResults();
+            }
+        }
+        
+        // Daten als CSV herunterladen
+        function downloadData() {
+            let csv = 'Gruppe,Wert\n';
+            
+            // Füge Daten hinzu
+            responses.with.forEach(value => {
+                csv += 'Mit,' + value.toFixed(2) + '\n';
+            });
+            responses.without.forEach(value => {
+                csv += 'Ohne,' + value.toFixed(2) + '\n';
+            });
+            
+            // Erstelle Download
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('hidden', '');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'gummibaerchen-experiment.csv');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+        
+        // Wertauswahl zurücksetzen
+        function resetValueSelection() {
+            currentAmountIndex = 0;
+            switchValue = null;
+            document.getElementById('current-amount').textContent = AMOUNTS[0].toFixed(2) + '€';
+            document.getElementById('value-indicator').classList.add('hidden');
+            document.getElementById('submit-btn').classList.add('hidden');
+        }
+        
+        // Section anzeigen
+        function showSection(sectionId) {
+            // Alle Sections ausblenden
+            const sections = document.getElementsByClassName('section');
+            for (let i = 0; i < sections.length; i++) {
+                sections[i].classList.remove('active');
+            }
+            
+            // Gewählte Section einblenden
+            document.getElementById(sectionId).classList.add('active');
+        }
+    </script>
+</body>
+</html>
