@@ -42,109 +42,78 @@
             background-color: #2196F3;
         }
         
-        /* Extrem vereinfachte Chart-Darstellung mit Tabelle */
-        .chart-table {
+        /* Verbesserte Chart-Darstellung */
+        .chart-container {
             width: 600px;
             max-width: 100%;
             margin: 40px auto;
-            text-align: center;
-            border-collapse: collapse;
-        }
-        .chart-table-header {
-            font-weight: bold;
-            background-color: #f2f2f2;
-            padding: 10px;
-        }
-        .chart-bar-cell {
-            vertical-align: bottom;
-            height: 300px;
-            width: 120px;
             position: relative;
-            padding: 0;
-        }
-        .chart-bar {
-            width: 80px;
-            background-color: #4CAF50;
-            margin: 0 auto;
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        .chart-value {
-            padding-top: 10px;
-            font-weight: bold;
-        }
-        .chart-label {
-            padding-top: 10px;
-            font-weight: bold;
+            height: 400px;
         }
         
-        /* Einfachster Achsenstil */
-        .x-axis {
-            height: 2px;
-            background-color: black;
-            position: relative;
-            margin-top: 20px;
-        }
-        .x-axis:after {
-            content: "→";
+        /* Einfachere Achsen */
+        .axis {
             position: absolute;
-            right: -15px;
-            top: -8px;
-            font-size: 20px;
+            background-color: black;
+        }
+        .x-axis {
+            bottom: 0;
+            left: 0;
+            height: 2px;
+            width: 100%;
         }
         .y-axis {
-            width: 2px;
-            background-color: black;
-            position: absolute;
-            left: 0;
-            top: 0;
             bottom: 0;
-        }
-        .y-axis:after {
-            content: "↑";
-            position: absolute;
-            top: -20px;
-            left: -9px;
-            font-size: 20px;
+            left: 0;
+            width: 2px;
+            height: 100%;
         }
         .y-axis-label {
             position: absolute;
             transform: rotate(-90deg);
             transform-origin: top left;
-            left: -40px;
-            top: 50%;
-            width: 300px;
+            left: -20px;
+            top: 200px;
+            width: 200px;
             text-align: center;
             font-weight: bold;
         }
-        .chart-container {
+        
+        /* Bars direkt mit Tabelle */
+        .bars-table {
+            position: absolute;
+            bottom: 0;
+            left: 50px;
+            width: calc(100% - 60px);
+            border-spacing: 0;
+            border-collapse: collapse;
+        }
+        .bar-cell {
             position: relative;
-            width: 600px;
-            max-width: 100%;
-            margin: 40px auto;
-            padding-left: 60px;
-            padding-top: 30px;
-            box-sizing: border-box;
+            vertical-align: bottom;
+            text-align: center;
+            width: 120px;
+        }
+        .bar {
+            margin: 0 auto;
+            width: 80px;
+            background-color: #4CAF50;
+            position: relative;
+        }
+        .bar-value {
+            position: absolute;
+            top: -25px;
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+        }
+        .bar-label {
+            margin-top: 10px;
+            text-align: center;
+            font-weight: bold;
         }
         
-        /* Datenpunkte als einfache Karten */
-        .data-cards {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 20px 0;
-        }
-        .data-card {
-            display: inline-block;
-            width: 60px;
-            padding: 10px;
-            background-color: #f2f2f2;
-            border-radius: 5px;
-            text-align: center;
-            border: 1px solid #ddd;
-        }
+        /* Verbesserte Datenpunkte */
         .data-section {
             margin: 30px 0;
             padding: 20px;
@@ -155,6 +124,25 @@
         .data-title {
             font-weight: bold;
             margin-bottom: 10px;
+        }
+        .data-group-title {
+            font-weight: bold;
+            margin: 15px 0 10px 0;
+        }
+        .data-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .data-card {
+            display: inline-block;
+            width: 60px;
+            padding: 10px;
+            background-color: #f2f2f2;
+            border-radius: 5px;
+            text-align: center;
+            border: 1px solid #ddd;
         }
         
         input[type="password"] {
@@ -230,43 +218,44 @@
             
             <h2>Durchschnittliche Werte pro Gruppe</h2>
             
-            <!-- VEREINFACHTE TABELLEN-BASIERTE DARSTELLUNG -->
+            <!-- VERBESSERTE CHART-DARSTELLUNG -->
             <div class="chart-container">
-                <div class="y-axis"></div>
+                <!-- Achsen -->
+                <div class="axis y-axis"></div>
+                <div class="axis x-axis"></div>
                 <div class="y-axis-label">Durchschnittswert [€]</div>
                 
-                <table class="chart-table">
+                <!-- Balken direkt mit Tabelle -->
+                <table class="bars-table">
                     <tr>
-                        <td class="chart-bar-cell" id="with-cell">
-                            <div class="chart-bar" id="with-bar"></div>
+                        <td class="bar-cell" id="with-cell">
+                            <div class="bar" id="with-bar">
+                                <div class="bar-value" id="with-value">0.00€</div>
+                            </div>
                         </td>
-                        <td class="chart-bar-cell" id="without-cell">
-                            <div class="chart-bar" id="without-bar"></div>
+                        <td class="bar-cell" id="without-cell">
+                            <div class="bar" id="without-bar">
+                                <div class="bar-value" id="without-value">0.00€</div>
+                            </div>
                         </td>
                     </tr>
                     <tr>
-                        <td class="chart-value" id="with-value">0.00€</td>
-                        <td class="chart-value" id="without-value">0.00€</td>
-                    </tr>
-                    <tr>
-                        <td class="chart-label">Besitz</td>
-                        <td class="chart-label">Kein Besitz</td>
+                        <td class="bar-label">Besitz</td>
+                        <td class="bar-label">Kein Besitz</td>
                     </tr>
                 </table>
-                
-                <div class="x-axis"></div>
             </div>
             
-            <!-- VEREINFACHTE DATENPUNKTDARSTELLUNG -->
+            <!-- VERBESSERTE DATENPUNKTDARSTELLUNG -->
             <div class="data-section">
                 <div class="data-title">Verteilung der individuellen Werte</div>
                 
-                <h4>Besitz-Gruppe</h4>
+                <div class="data-group-title" id="with-group-title">Besitz-Gruppe (0)</div>
                 <div class="data-cards" id="with-data-points">
                     <!-- Datenpunkte werden hier dynamisch eingefügt -->
                 </div>
                 
-                <h4>Kein-Besitz-Gruppe</h4>
+                <div class="data-group-title" id="without-group-title">Kein-Besitz-Gruppe (0)</div>
                 <div class="data-cards" id="without-data-points">
                     <!-- Datenpunkte werden hier dynamisch eingefügt -->
                 </div>
@@ -328,7 +317,7 @@
             console.error("Fehler bei der Firebase-Initialisierung:", error);
             alert("Es gab ein Problem bei der Verbindung zum Server. Die App funktioniert möglicherweise nicht korrekt.");
             
-            // Dummy-DB für Fallback (verhindert Fehler, wenn die echte DB nicht verfügbar ist)
+            // Dummy-DB für Fallback
             db = {
                 collection: function() {
                     return {
@@ -485,7 +474,7 @@
             }
         }
         
-        // Ergebnisse aktualisieren - VEREINFACHTE METHODE
+        // Ergebnisse aktualisieren
         function updateResults() {
             try {
                 // Berechne Durchschnittswerte
@@ -500,13 +489,18 @@
                 document.getElementById('total-participants').textContent = 
                     allResponses.with.length + allResponses.without.length;
                 
+                // Aktualisiere Gruppentitel mit Teilnehmeranzahl
+                document.getElementById('with-group-title').textContent = 
+                    'Besitz-Gruppe (' + allResponses.with.length + ')';
+                document.getElementById('without-group-title').textContent = 
+                    'Kein-Besitz-Gruppe (' + allResponses.without.length + ')';
+                
                 // Aktualisiere Balkenwerte
                 document.getElementById('with-value').textContent = withAvg.toFixed(2) + '€';
                 document.getElementById('without-value').textContent = withoutAvg.toFixed(2) + '€';
                 
-                // VEREINFACHTE BALKENDARSTELLUNG
-                // Balkenhöhe berechnen (maximal 250px bei 2€)
-                const maxHeight = 250;
+                // Balkenhöhe berechnen (maximal 300px bei 2€)
+                const maxHeight = 300;
                 const withHeight = Math.max(1, Math.round((withAvg / 2) * maxHeight));
                 const withoutHeight = Math.max(1, Math.round((withoutAvg / 2) * maxHeight));
                 
@@ -518,7 +512,7 @@
                 withBar.style.height = withHeight + 'px';
                 withoutBar.style.height = withoutHeight + 'px';
                 
-                // VEREINFACHTE DATENPUNKTDARSTELLUNG
+                // Datenpunkte aktualisieren
                 updateDataPoints('with-data-points', allResponses.with);
                 updateDataPoints('without-data-points', allResponses.without);
                 
@@ -528,7 +522,7 @@
             }
         }
         
-        // Datenpunkte aktualisieren - VEREINFACHTE VERSION
+        // Datenpunkte aktualisieren
         function updateDataPoints(containerId, dataArray) {
             try {
                 // Container leeren
