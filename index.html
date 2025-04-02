@@ -2,12 +2,12 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gummibärchen-Experiment</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>Endowment-Effekt Experiment</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 600px;
+            max-width: 100%;
             margin: 0 auto;
             padding: 20px;
         }
@@ -45,14 +45,19 @@
             margin-top: 30px;
         }
         .chart-container {
-            height: 300px;
+            height: 400px;
             position: relative;
-            margin-top: 30px;
+            margin-top: 50px;
+            margin-bottom: 50px;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
         }
         .bar {
             position: absolute;
-            bottom: 0;
-            width: 100px;
+            bottom: 30px; /* Space for x-axis */
+            width: 120px;
             background-color: #4CAF50;
             display: flex;
             flex-direction: column;
@@ -61,10 +66,10 @@
             transition: height 1s ease-in-out;
         }
         .bar:first-child {
-            left: 100px;
+            left: 25%;
         }
         .bar:last-child {
-            right: 100px;
+            right: 25%;
         }
         .bar-value {
             margin-top: -25px;
@@ -77,18 +82,51 @@
         }
         .xaxis {
             position: absolute;
-            bottom: -30px;
-            width: 100%;
-            height: 1px;
+            bottom: 0;
+            left: 40px;
+            width: calc(100% - 60px);
+            height: 2px;
             background-color: #000;
+        }
+        .xaxis:after {
+            content: "";
+            position: absolute;
+            right: -10px;
+            top: -5px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid black;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
         }
         .yaxis {
             position: absolute;
-            left: 0;
+            left: 40px;
             bottom: 0;
-            width: 1px;
-            height: 100%;
+            width: 2px;
+            height: calc(100% - 0px);
             background-color: #000;
+        }
+        .yaxis:after {
+            content: "";
+            position: absolute;
+            left: -5px;
+            top: -10px;
+            width: 0;
+            height: 0;
+            border-bottom: 10px solid black;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+        }
+        .y-label {
+            position: absolute;
+            left: -20px;
+            top: 40%;
+            transform: rotate(-90deg);
+            transform-origin: center right;
+            font-weight: bold;
+            width: 200px;
+            text-align: center;
         }
         input[type="password"] {
             padding: 8px;
@@ -113,18 +151,59 @@
             font-style: italic;
             margin-top: 20px;
         }
+        
+        /* Verbesserte Responsiveness */
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+            }
+            .bar {
+                width: 80px;
+            }
+            .bar:first-child {
+                left: 20%;
+            }
+            .bar:last-child {
+                right: 20%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .chart-container {
+                height: 250px;
+            }
+            .bar {
+                width: 60px;
+            }
+            .bar:first-child {
+                left: 15%;
+            }
+            .bar:last-child {
+                right: 15%;
+            }
+        }
+        
+        /* Für Präsentationsmodus */
+        @media (min-width: 1200px) {
+            .chart-container {
+                height: 600px;
+            }
+            .bar {
+                width: 150px;
+            }
+        }
     </style>
 </head>
 <body>
     <!-- Teilnehmer-Bereich -->
     <div id="participant-section" class="section active">
-        <h1>Gummibärchen-Experiment</h1>
+        <h1>Endowment-Effekt Experiment</h1>
         <p>Vielen Dank für Ihre Teilnahme an diesem Experiment!</p>
         
         <div id="group-selection">
             <h2>Schritt 1: Zu welcher Gruppe gehören Sie?</h2>
-            <button id="group-with" onclick="selectGroup('with')">Ich habe Haribo Gummibärchen erhalten</button>
-            <button id="group-without" onclick="selectGroup('without')">Ich habe KEINE Gummibärchen erhalten</button>
+            <button id="group-with" onclick="selectGroup('with')">Ich habe Haribo Gummibärchen erhalten (Besitz)</button>
+            <button id="group-without" onclick="selectGroup('without')">Ich habe KEINE Gummibärchen erhalten (kein Besitz)</button>
         </div>
         
         <div id="value-selection" class="hidden">
@@ -165,23 +244,24 @@
             
             <div class="chart-container">
                 <div class="yaxis"></div>
+                <div class="y-label">Durchschnittswert [€]</div>
                 <div class="xaxis"></div>
                 
                 <div class="bar" id="with-bar">
                     <div class="bar-value" id="with-value">0.00€</div>
-                    <div class="bar-label">Mit Gummibärchen</div>
+                    <div class="bar-label">Besitz</div>
                 </div>
                 
                 <div class="bar" id="without-bar">
                     <div class="bar-value" id="without-value">0.00€</div>
-                    <div class="bar-label">Ohne Gummibärchen</div>
+                    <div class="bar-label">Kein Besitz</div>
                 </div>
             </div>
             
             <div>
                 <h3>Detaillierte Daten</h3>
-                <p>Gruppe mit Gummibärchen: <span id="with-count">0</span> Teilnehmer, Durchschnitt: <span id="with-avg">0.00€</span></p>
-                <p>Gruppe ohne Gummibärchen: <span id="without-count">0</span> Teilnehmer, Durchschnitt: <span id="without-avg">0.00€</span></p>
+                <p>Gruppe mit Besitz: <span id="with-count">0</span> Teilnehmer, Durchschnitt: <span id="with-avg">0.00€</span></p>
+                <p>Gruppe ohne Besitz: <span id="without-count">0</span> Teilnehmer, Durchschnitt: <span id="without-avg">0.00€</span></p>
                 <button onclick="resetData()">Daten zurücksetzen</button>
                 <button onclick="downloadData()">Daten herunterladen (CSV)</button>
             </div>
@@ -212,7 +292,7 @@
         const db = firebase.firestore();
         
         // Konstanten
-        const ADMIN_PASSWORD = "15Punkte"; // ← HIER PASSWORT ÄNDERN
+        const ADMIN_PASSWORD = "experiment123"; // ← HIER PASSWORT ÄNDERN
         const AMOUNTS = [
             0.10, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 
             1.00, 1.10, 1.20, 1.30, 1.40, 1.50, 1.60, 1.70, 1.80, 1.90, 2.00
@@ -361,9 +441,11 @@
             document.getElementById('with-value').textContent = withAvg.toFixed(2) + '€';
             document.getElementById('without-value').textContent = withoutAvg.toFixed(2) + '€';
             
-            // Setze Balkenhöhe (max 250px, bei max. 2€)
-            const withHeight = (withAvg / 2) * 250;
-            const withoutHeight = (withoutAvg / 2) * 250;
+            // Setze Balkenhöhe (max 70% der Container-Höhe, bei max. 2€)
+            const maxHeight = document.querySelector('.chart-container').offsetHeight * 0.7;
+            const withHeight = (withAvg / 2) * maxHeight;
+            const withoutHeight = (withoutAvg / 2) * maxHeight;
+            
             document.getElementById('with-bar').style.height = withHeight + 'px';
             document.getElementById('without-bar').style.height = withoutHeight + 'px';
         }
@@ -400,10 +482,10 @@
             
             // Füge Daten hinzu
             allResponses.with.forEach(value => {
-                csv += 'Mit,' + value.toFixed(2) + '\n';
+                csv += 'Besitz,' + value.toFixed(2) + '\n';
             });
             allResponses.without.forEach(value => {
-                csv += 'Ohne,' + value.toFixed(2) + '\n';
+                csv += 'Kein Besitz,' + value.toFixed(2) + '\n';
             });
             
             // Erstelle Download
@@ -412,7 +494,7 @@
             const a = document.createElement('a');
             a.setAttribute('hidden', '');
             a.setAttribute('href', url);
-            a.setAttribute('download', 'gummibaerchen-experiment.csv');
+            a.setAttribute('download', 'endowment-effekt-experiment.csv');
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -438,6 +520,12 @@
             // Gewählte Section einblenden
             document.getElementById(sectionId).classList.add('active');
         }
+
+        // Bei Änderung der Fenstergröße die Grafik aktualisieren
+        window.addEventListener('resize', function() {
+            if (document.getElementById('results').classList.contains('hidden')) return;
+            updateResults();
+        });
     </script>
 </body>
 </html>
